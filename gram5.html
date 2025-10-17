@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>小朋友英文Grammar選擇題</title>
+  <style>
+    :root{
+      --bg:#fff8cc;
+      --accent:#ffb703;
+      --accent-2:#fb8500;
+      --ink:#1f2937;
+      --ok:#16a34a;
+      --bad:#dc2626;
+      --card:#ffffffcc;
+    }
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: "Noto Sans HK", "PingFang TC", "Microsoft JhengHei", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--ink);
+      background: var(--bg);
+      line-height:1.5;
+    }
+    /* Cute yellow animal background via inline SVG pattern */
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      z-index:-1; opacity:.35;
+      background-image: url('data:image/svg+xml;utf8,\
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">\
+<rect width="200" height="200" fill="%23fff2a8"/>\
+<g fill="%23ffc94a">\
+<text x="20" y="40" font-size="28">🐯</text>\
+<text x="90" y="60" font-size="28">🐵</text>\
+<text x="150" y="40" font-size="28">🐼</text>\
+<text x="40" y="120" font-size="28">🦊</text>\
+<text x="120" y="130" font-size="28">🐻</text>\
+<text x="10" y="180" font-size="28">🐨</text>\
+<text x="160" y="180" font-size="28">🦁</text>\
+</g>\
+</svg>');
+      background-size:200px 200px;
+      background-repeat:repeat;
+    }
+    .wrap{
+      max-width: 1000px;
+      margin: clamp(12px, 2vw, 24px) auto;
+      padding: clamp(12px, 2vw, 24px);
+    }
+    header{
+      background: linear-gradient(180deg, rgba(255,199,64,.9), rgba(255,184,34,.9));
+      border: 3px solid var(--accent-2);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,.08);
+    }
+    h1{
+      margin:0 0 6px 0;
+      font-size: clamp(20px, 3.8vw, 42px);
+      letter-spacing:.5px;
+    }
+    .subtitle{
+      margin-top:0;
+      font-size: clamp(14px, 1.9vw, 18px);
+    }
+    .card{
+      background: var(--card);
+      border: 2px solid #f3d27a;
+      border-radius: 16px;
+      padding: 16px;
+      margin-top: 14px;
+      box-shadow: 0 6px 14px rgba(0,0,0,.06);
+    }
+    .q{
+      display:grid; gap:10px;
+      padding: 14px;
+      border-radius:14px;
+      background:#fffdf4;
+      border:1px dashed #f0cc6b;
+    }
+    .q + .q{ margin-top: 12px;}
+    .q h3{ margin:0; font-size: clamp(16px, 2.1vw, 20px);}
+    .opts{ display:grid; gap:8px; margin-left: 4px;}
+    .opt{
+      display:flex; align-items:center; gap:10px;
+      background:#fff;
+      padding:10px 12px; border-radius:10px;
+      border:1.5px solid #f2d27a;
+      cursor:pointer;
+      transition:.15s ease;
+    }
+    .opt:hover{ transform: translateY(-1px); box-shadow: 0 6px 10px rgba(0,0,0,.05);}
+    input[type="radio"]{ transform: scale(1.2); }
+    .actions{
+      position: sticky; bottom:12px;
+      display:flex; gap:10px; flex-wrap:wrap;
+      background:#fff9d9dd;
+      border:2px solid #f3d27a;
+      padding:12px; border-radius:14px; margin-top: 18px;
+      backdrop-filter: blur(6px);
+    }
+    button{
+      font-size:16px; font-weight:700;
+      border:none; border-radius:12px;
+      padding:12px 16px; cursor:pointer;
+      box-shadow: 0 8px 16px rgba(0,0,0,.08);
+    }
+    .primary{ background: var(--accent-2); color:#fff; }
+    .ghost{ background:#fff; border:2px solid var(--accent-2); color:#7a4a00; }
+    .muted{ background:#fff; border:2px solid #caa64a; color:#6c5b2a; }
+    .score{
+      font-size: clamp(16px, 2.4vw, 22px);
+      font-weight:800;
+    }
+    .correct{ border-color: #86efac !important; background:#f0fff4; }
+    .wrong{ border-color: #fca5a5 !important; background:#fff5f5; }
+    .explain{ font-size: 14px; color:#374151; padding-left: 8px;}
+    footer{ text-align:center; opacity:.8; margin-top: 14px; font-size: 13px;}
+    .tag{ display:inline-block; padding:4px 8px; border-radius:999px; background:#fff; border:1px solid #f2d27a; font-size:12px; margin-left:6px;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>小朋友英文文法選擇題 🐯</h1>
+      <p class="subtitle">主題：<strong>Past Tense</strong> ＆ <strong>Present Perfect</strong>（現在完成式）
+        <span class="tag">共30題</span>
+        <span class="tag">黃色動物背景</span>
+      </p>
+    </header>
+
+    <div id="quiz" class="card"></div>
+
+    <div class="actions">
+      <button id="submitBtn" class="primary">交卷</button>
+      <button id="showAnsBtn" class="ghost">顯示答案</button>
+      <button id="resetBtn" class="muted">重設</button>
+      <span id="score" class="score" style="margin-left:auto;"></span>
+    </div>
+    <footer>Designed for kids • Past & Present Perfect 練習</footer>
+  </div>
+
+<script>
+const QUESTIONS = [
+  // ---- Simple Present (1-6) ----
+  {
+    id:1, type:"Simple Present",
+    text:"Mia ____ her plants every morning.",
+    options:["water","waters","watered","is watering"], answer:1,
+    explain:"第三人稱單數一般現在式動詞加 -s：waters。"
+  },
+  {
+    id:2, type:"Simple Present",
+    text:"I ____ the bus to school.",
+    options:["take","takes","took","am take"], answer:0,
+    explain:"主語 I 在一般現在式用原形 take。"
+  },
+  {
+    id:3, type:"Simple Present",
+    text:"How often ____ you clean your room?",
+    options:["do","does","are","did"], answer:0,
+    explain:"主語 you 疑問句使用 do。"
+  },
+  {
+    id:4, type:"Simple Present",
+    text:"My brother ____ video games after homework.",
+    options:["play","plays","played","is playing"], answer:1,
+    explain:"第三人稱單數用 plays。"
+  },
+  {
+    id:5, type:"Simple Present",
+    text:"Birds ____ in the sky.",
+    options:["fly","flies","flew","flying"], answer:0,
+    explain:"複數主語用原形 fly。"
+  },
+  {
+    id:6, type:"Simple Present",
+    text:"The store ____ at 10 a.m. on Sundays.",
+    options:["open","opens","opened","is open"], answer:1,
+    explain:"單數主語 the store → opens。"
+  },
+
+  // ---- Future Tense (7-12) ----
+  {
+    id:7, type:"Future Tense",
+    text:"We ____ start the project next month.",
+    options:["will","are going to be","was","do"], answer:0,
+    explain:"簡單未來用 will + 原形。"
+  },
+  {
+    id:8, type:"Future Tense",
+    text:"Watch out! The glass ____ fall.",
+    options:["is going to","will to","is will","are going to"], answer:0,
+    explain:"有立即徵兆時常用 be going to。"
+  },
+  {
+    id:9, type:"Future Tense",
+    text:"I ____ visit my aunt this weekend.",
+    options:["am going to","will visits","am visit","was going"], answer:0,
+    explain:"be going to + 原形：am going to visit。"
+  },
+  {
+    id:10, type:"Future Tense",
+    text:"The meeting ____ at 4 p.m. tomorrow.",
+    options:["starts","will start","is going to starting","start"], answer:0,
+    explain:"時間表/行程可用一般現在式表示未來：starts。"
+  },
+  {
+    id:11, type:"Future Tense",
+    text:"____ you be free on Saturday?",
+    options:["Will","Do","Are","Did"], answer:0,
+    explain:"將來式疑問句以 Will 開頭。"
+  },
+  {
+    id:12, type:"Future Tense",
+    text:"Dad ____ drive us to the park.",
+    options:["will","is","does","has"], answer:0,
+    explain:"未來用 will。"
+  },
+
+  // ---- Be Verbs (13-18) ----
+  {
+    id:13, type:"Be Verbs",
+    text:"My grandparents ____ at home now.",
+    options:["are","is","am","be"], answer:0,
+    explain:"複數主語 grandparents 用 are。"
+  },
+  {
+    id:14, type:"Be Verbs",
+    text:"This box ____ heavy.",
+    options:["is","are","am","be"], answer:0,
+    explain:"單數主語 this box → is。"
+  },
+  {
+    id:15, type:"Be Verbs",
+    text:"Where ____ the new student from?",
+    options:["is","are","do","does"], answer:0,
+    explain:"單數主語（student）疑問句用 is。"
+  },
+  {
+    id:16, type:"Be Verbs",
+    text:"I ____ not late for class.",
+    options:["am","is","are","be"], answer:0,
+    explain:"主語 I → am；否定 am not。"
+  },
+  {
+    id:17, type:"Be Verbs",
+    text:"There ____ two birds in the tree.",
+    options:["are","is","am","be"], answer:0,
+    explain:"there are/there is；複數名詞 two birds 用 are。"
+  },
+  {
+    id:18, type:"Be Verbs",
+    text:"These markers ____ new.",
+    options:["are","is","am","be"], answer:0,
+    explain:"複數主語 These markers 用 are。"
+  },
+
+  // ---- Modals (19-24) ----
+  {
+    id:19, type:"Modals",
+    text:"You ____ cross the street when the light is red.",
+    options:["mustn't","should","may","can"], answer:0,
+    explain:"嚴格禁止用 mustn't。"
+  },
+  {
+    id:20, type:"Modals",
+    text:"It may rain. You ____ take an umbrella.",
+    options:["should","mustn't","can to","are"], answer:0,
+    explain:"建議：should。"
+  },
+  {
+    id:21, type:"Modals",
+    text:"I ____ finish this book today.",
+    options:["might","mustn't","are going to","is"], answer:0,
+    explain:"不確定的可能性：might。"
+  },
+  {
+    id:22, type:"Modals",
+    text:"____ you pass me the salt, please?",
+    options:["Could","Do","Are","Did"], answer:0,
+    explain:"禮貌請求常用 Could you ...?"
+  },
+  {
+    id:23, type:"Modals",
+    text:"We ____ wear helmets when we ride bikes.",
+    options:["have to","may","shouldn't","can to"], answer:0,
+    explain:"義務/規定：have to。"
+  },
+  {
+    id:24, type:"Modals",
+    text:"You ____ watch TV after you finish your homework.",
+    options:["can","must","can't","may not"], answer:0,
+    explain:"允許：can。"
+  },
+
+  // ---- Prepositions (25-30) ----
+  {
+    id:25, type:"Prepositions",
+    text:"Let's meet ____ the library entrance.",
+    options:["at","on","in","by"], answer:0,
+    explain:"具體地點（入口）用 at。"
+  },
+  {
+    id:26, type:"Prepositions",
+    text:"The ball rolled ____ the table.",
+    options:["under","on","between","behind"], answer:0,
+    explain:"在…下面：under the table。"
+  },
+  {
+    id:27, type:"Prepositions",
+    text:"He was born ____ 2014.",
+    options:["in","on","at","by"], answer:0,
+    explain:"年份用 in。"
+  },
+  {
+    id:28, type:"Prepositions",
+    text:"The picture is ____ the box and the lamp.",
+    options:["between","among","in","to"], answer:0,
+    explain:"兩者之間用 between。"
+  },
+  {
+    id:29, type:"Prepositions",
+    text:"There is a note ____ the desk.",
+    options:["on","in","at","to"], answer:0,
+    explain:"在桌面上用 on。"
+  },
+  {
+    id:30, type:"Prepositions",
+    text:"We usually have dinner ____ 7 p.m.",
+    options:["at","on","in","by"], answer:0,
+    explain:"具體時間點用 at。"
+  }
+];
+
+function renderQuiz(){
+  const container = document.getElementById('quiz');
+  container.innerHTML = "";
+  QUESTIONS.forEach((q, idx)=>{
+    const qEl = document.createElement('div');
+    qEl.className = 'q';
+    qEl.dataset.qid = q.id;
+    qEl.innerHTML = `
+      <h3>${idx+1}. ${q.text}
+        <span class="tag">${q.type}</span>
+      </h3>
+      <div class="opts">
+        ${q.options.map((o,i)=>`
+          <label class="opt">
+            <input type="radio" name="q${q.id}" value="${i}"/>
+            <span> ${String.fromCharCode(65+i)}. ${o}</span>
+          </label>
+        `).join('')}
+      </div>
+      <div class="explain" id="exp-${q.id}" style="display:none;"></div>
+    `;
+    container.appendChild(qEl);
+  });
+}
+
+function getAnswers(){
+  const answers = new Map();
+  QUESTIONS.forEach(q=>{
+    const chosen = document.querySelector(`input[name="q${q.id}"]:checked`);
+    answers.set(q.id, chosen ? Number(chosen.value) : null);
+  });
+  return answers;
+}
+
+function submit(){
+  const answers = getAnswers();
+  let correct = 0;
+  QUESTIONS.forEach(q=>{
+    const chosen = answers.get(q.id);
+    const qEl = document.querySelector(`.q[data-qid="${q.id}"]`);
+    qEl.classList.remove('correct','wrong');
+    const exp = document.getElementById(`exp-${q.id}`);
+    if(chosen === q.answer){
+      correct++;
+      qEl.classList.add('correct');
+      exp.style.display = 'block';
+      exp.innerText = "✅ 正確！" + " " + q.explain;
+    }else{
+      qEl.classList.add('wrong');
+      exp.style.display = 'block';
+      const ansText = q.options[q.answer];
+      exp.innerText = "❌ 小心！正確答案是「" + ansText + "」。" + " " + q.explain;
+    }
+  });
+  const score = document.getElementById('score');
+  score.textContent = `得分：${correct} / ${QUESTIONS.length}`;
+  window.scrollTo({top: document.body.scrollHeight, behavior:'smooth'});
+}
+
+function showAnswers(){
+  QUESTIONS.forEach(q=>{
+    const qEl = document.querySelector(`.q[data-qid="${q.id}"]`);
+    qEl.classList.add('correct');
+    const exp = document.getElementById(`exp-${q.id}`);
+    exp.style.display = 'block';
+    exp.innerText = "⭐ 正確答案：" + q.options[q.answer] + "。 " + q.explain;
+    // tick the right option for visibility
+    const right = document.querySelector(`input[name="q${q.id}"][value="${q.answer}"]`);
+    if(right) right.checked = true;
+  });
+  document.getElementById('score').textContent = `已顯示全部答案（共 ${QUESTIONS.length} 題）`;
+}
+
+function resetQuiz(){
+  document.getElementById('score').textContent = "";
+  document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+  document.querySelectorAll('.q').forEach(qEl => qEl.classList.remove('correct','wrong'));
+  document.querySelectorAll('.explain').forEach(e => { e.style.display='none'; e.textContent=''; });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+document.getElementById('submitBtn').addEventListener('click', submit);
+document.getElementById('showAnsBtn').addEventListener('click', showAnswers);
+document.getElementById('resetBtn').addEventListener('click', resetQuiz);
+
+renderQuiz();
+</script>
+</body>
+</html>
